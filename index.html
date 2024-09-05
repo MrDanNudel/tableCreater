@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create a Table</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <button id="createTableBtn" class="btn">Create Table</button>
+
+      <form id="tableForm" class="hidden">
+        <div class="form-group">
+          <label for="tableName">Table Name:</label>
+          <input type="text" id="tableName" placeholder="Enter table name" />
+        </div>
+
+        <div class="form-group">
+          <label for="columnCount">Number of Columns:</label>
+          <input
+            type="number"
+            id="columnCount"
+            min="1"
+            placeholder="Enter number of columns"
+          />
+        </div>
+
+        <div id="columnTitles" class="form-group hidden"></div>
+
+        <button type="submit" class="btn">Create Table</button>
+      </form>
+
+      <div id="tableContainer"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
