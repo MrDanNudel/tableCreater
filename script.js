@@ -43,6 +43,7 @@ document.getElementById("tableForm").addEventListener("submit", function (e) {
   ).map((input) => input.value);
 
   createTable(tableName, columnTitles);
+  document.getElementById("tableForm").classList.add("hidden");
 });
 
 function createTable(name, columns) {
@@ -65,7 +66,60 @@ function createTable(name, columns) {
   });
   table.appendChild(headerRow);
 
+  // Add empty input row for user input
+  const inputRow = document.createElement("tr");
+  columns.forEach(() => {
+    const td = document.createElement("td");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.classList.add("row-input");
+    td.appendChild(input);
+    inputRow.appendChild(td);
+  });
+  table.appendChild(inputRow);
+
   // Append table to container
   tableContainer.innerHTML = ""; // Clear previous table
   tableContainer.appendChild(table);
+
+  // Create "Add Row" button
+  const addRowBtn = document.createElement("button");
+  addRowBtn.textContent = "Add Row";
+  addRowBtn.classList.add("btn", "add-row-btn");
+  addRowBtn.addEventListener("click", () => addRow(table, columns.length));
+  tableContainer.appendChild(addRowBtn);
+
+  // Create "Update Table" button
+  const updateTableBtn = document.createElement("button");
+  updateTableBtn.textContent = "Update Table";
+  updateTableBtn.classList.add("btn", "update-table-btn");
+  updateTableBtn.addEventListener("click", () => updateTable(table, columns));
+  tableContainer.appendChild(updateTableBtn);
+}
+
+function addRow(table, columnCount) {
+  const newRow = document.createElement("tr");
+  for (let i = 0; i < columnCount; i++) {
+    const td = document.createElement("td");
+    const input = document.createElement("input");
+    input.type = "text";
+    input.classList.add("row-input");
+    td.appendChild(input);
+    newRow.appendChild(td);
+  }
+  table.appendChild(newRow);
+}
+
+function updateTable(table, columns) {
+  const rows = table.querySelectorAll("tr");
+  rows.forEach((row, rowIndex) => {
+    if (rowIndex === 0) return; // Skip header row
+
+    const inputs = row.querySelectorAll("input");
+    inputs.forEach((input, colIndex) => {
+      const cell = document.createElement("td");
+      cell.textContent = input.value;
+      row.replaceChild(cell, input.parentElement);
+    });
+  });
 }
