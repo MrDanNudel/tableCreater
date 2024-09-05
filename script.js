@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tableContainer = document.getElementById("tableContainer");
   const addRowBtn = document.getElementById("addRowBtn");
   const updateTableBtn = document.getElementById("updateTableBtn");
+  const downloadTableBtn = document.getElementById("downloadTableBtn");
   let table, tableBody, columnCount;
 
   // Show the form when the "Create Table" button is clicked
@@ -57,13 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Check for column count and validate column titles
+    columnCount = parseInt(document.getElementById("columnCount").value);
     if (isNaN(columnCount) || columnCount <= 0) {
       alert("Please enter a valid number of columns.");
-      return;
-    }
-
-    if (columnCount <= 0) {
-      alert("Number of columns must be greater than 0.");
       return;
     }
 
@@ -109,9 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tableContainer.appendChild(table);
 
-    // Show Add Row and Update Table buttons
+    // Show Add Row, Update Table, and Download Table buttons
     addRowBtn.classList.remove("hidden");
     updateTableBtn.classList.remove("hidden");
+    downloadTableBtn.classList.remove("hidden");
   });
 
   // Function to add an empty row with input fields
@@ -143,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let rowHasValue = false;
 
       inputs.forEach((input) => {
-        if (input.value.trim()) {
+        if (input.value.trim() !== "") {
           rowHasValue = true;
         }
       });
@@ -160,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // Update the table with the input values
     rows.forEach((row) => {
       const inputs = row.querySelectorAll("input");
       inputs.forEach((input) => {
@@ -167,5 +166,33 @@ document.addEventListener("DOMContentLoaded", () => {
         td.textContent = input.value; // Replace input field with entered value
       });
     });
+  });
+
+  // Function to download table data as a text file
+  function downloadTable() {
+    let text = "";
+    const rows = table.querySelectorAll("tr");
+
+    rows.forEach((row) => {
+      const cells = row.querySelectorAll("th, td");
+      const rowText = Array.from(cells)
+        .map((cell) => cell.textContent)
+        .join("\t");
+      text += rowText + "\n";
+    });
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "table-data.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  // Handle Download Table button click
+  downloadTableBtn.addEventListener("click", () => {
+    downloadTable();
   });
 });

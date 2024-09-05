@@ -10,7 +10,7 @@ body {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
   padding: 20px;
   background-color: #fff;
@@ -28,6 +28,7 @@ body {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 10px;
+  transition: background-color 0.3s;
 }
 
 .btn:hover {
@@ -54,18 +55,6 @@ input {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-}
-
-.column-titles-container {
-  max-height: none;
-  overflow: visible;
-}
-
-.scrollable {
-  max-height: 200px;
-  overflow-y: scroll;
-  border: 1px solid #ccc;
-  padding-right: 10px;
 }
 
 table {
@@ -105,17 +94,36 @@ input.row-input {
 }
 
 .add-row-btn,
-.update-table-btn {
+.update-table-btn,
+.download-table-btn {
   margin-top: 20px;
-  background-color: #2196f3;
-  color: white;
 }
 
-.add-row-btn:hover,
-.update-table-btn:hover {
+.add-row-btn {
+  background-color: #2196f3;
+}
+
+.add-row-btn:hover {
   background-color: #1976d2;
 }
 
-.wide-table {
-  overflow-x: auto;
+.update-table-btn {
+  background-color: #4caf50;
+}
+
+.update-table-btn:hover {
+  background-color: #45a049;
+}
+
+.download-table-btn {
+  background-color: #ff9800;
+}
+
+.download-table-btn:hover {
+  background-color: #fb8c00;
+}
+
+.column-titles-container.scrollable {
+  max-height: 150px;
+  overflow-y: auto;
 }
