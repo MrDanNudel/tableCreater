@@ -56,6 +56,18 @@ input {
   box-sizing: border-box;
 }
 
+.column-titles-container {
+  max-height: none;
+  overflow: visible;
+}
+
+.scrollable {
+  max-height: 200px;
+  overflow-y: scroll;
+  border: 1px solid #ccc;
+  padding-right: 10px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -102,4 +114,8 @@ input.row-input {
 .add-row-btn:hover,
 .update-table-btn:hover {
   background-color: #1976d2;
+}
+
+.wide-table {
+  overflow-x: auto;
 }

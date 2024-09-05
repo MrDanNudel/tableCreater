@@ -1,125 +1,171 @@
-document
-  .getElementById("createTableBtn")
-  .addEventListener("click", function () {
-    document.getElementById("tableForm").classList.remove("hidden");
-    document.getElementById("createTableBtn").classList.add("hidden");
+document.addEventListener("DOMContentLoaded", () => {
+  const createTableBtn = document.getElementById("createTableBtn");
+  const tableForm = document.getElementById("tableForm");
+  const columnTitlesContainer = document.getElementById("columnTitles");
+  const tableContainer = document.getElementById("tableContainer");
+  const addRowBtn = document.getElementById("addRowBtn");
+  const updateTableBtn = document.getElementById("updateTableBtn");
+  let table, tableBody, columnCount;
+
+  // Show the form when the "Create Table" button is clicked
+  createTableBtn.addEventListener("click", () => {
+    createTableBtn.classList.add("hidden");
+    tableForm.classList.remove("hidden");
   });
 
-document.getElementById("columnCount").addEventListener("input", function () {
-  const columnCount = parseInt(this.value);
-  const columnTitlesDiv = document.getElementById("columnTitles");
+  // Handle column titles generation based on column count input
+  document.getElementById("columnCount").addEventListener("input", () => {
+    columnCount = parseInt(document.getElementById("columnCount").value);
+    columnTitlesContainer.innerHTML = ""; // Clear previous inputs
 
-  columnTitlesDiv.innerHTML = ""; // Clear previous inputs
+    if (columnCount > 0) {
+      // Add input fields for column titles
+      for (let i = 1; i <= columnCount; i++) {
+        const formGroup = document.createElement("div");
+        formGroup.classList.add("form-group");
+        const label = document.createElement("label");
+        label.textContent = `Column ${i} Title:`;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.id = `columnTitle${i}`;
+        input.required = true;
+        formGroup.appendChild(label);
+        formGroup.appendChild(input);
+        columnTitlesContainer.appendChild(formGroup);
+      }
 
-  if (columnCount > 0) {
+      // Add scrollbar if columns exceed 5
+      if (columnCount > 5) {
+        columnTitlesContainer.classList.add("scrollable");
+      } else {
+        columnTitlesContainer.classList.remove("scrollable");
+      }
+    }
+  });
+
+  // Handle table creation with validation
+  document.getElementById("createTable").addEventListener("click", (e) => {
+    e.preventDefault();
+
+    const tableName = document.getElementById("tableName").value;
+    const columnTitles = [];
+
+    // Check for empty table name
+    if (!tableName.trim()) {
+      alert("Please enter a table name.");
+      return;
+    }
+
+    // Check for column count and validate column titles
+    if (isNaN(columnCount) || columnCount <= 0) {
+      alert("Please enter a valid number of columns.");
+      return;
+    }
+
+    if (columnCount <= 0) {
+      alert("Number of columns must be greater than 0.");
+      return;
+    }
+
     for (let i = 1; i <= columnCount; i++) {
-      const inputGroup = document.createElement("div");
-      inputGroup.classList.add("form-group");
+      const title = document.getElementById(`columnTitle${i}`).value;
+      if (!title.trim()) {
+        alert(`Please enter a title for Column ${i}.`);
+        return;
+      }
+      columnTitles.push(title);
+    }
 
-      const label = document.createElement("label");
-      label.textContent = `Column ${i} Title:`;
+    // Hide the form and the "Create Table" button
+    createTableBtn.classList.add("hidden");
+    tableForm.classList.add("hidden");
 
+    // Clear previous table if exists
+    tableContainer.innerHTML = "";
+
+    // Create new table with caption
+    table = document.createElement("table");
+    const caption = document.createElement("caption");
+    caption.textContent = tableName;
+    table.appendChild(caption);
+
+    // Add table headers
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    columnTitles.forEach((title) => {
+      const th = document.createElement("th");
+      th.textContent = title;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Add empty body for rows
+    tableBody = document.createElement("tbody");
+    table.appendChild(tableBody);
+
+    // Add the first empty row with inputs
+    addEmptyRow();
+
+    tableContainer.appendChild(table);
+
+    // Show Add Row and Update Table buttons
+    addRowBtn.classList.remove("hidden");
+    updateTableBtn.classList.remove("hidden");
+  });
+
+  // Function to add an empty row with input fields
+  function addEmptyRow() {
+    const row = document.createElement("tr");
+    for (let i = 0; i < columnCount; i++) {
+      const td = document.createElement("td");
       const input = document.createElement("input");
       input.type = "text";
-      input.placeholder = `Enter title for column ${i}`;
-      input.classList.add("columnTitle");
-
-      inputGroup.appendChild(label);
-      inputGroup.appendChild(input);
-      columnTitlesDiv.appendChild(inputGroup);
+      input.classList.add("row-input");
+      td.appendChild(input);
+      row.appendChild(td);
     }
-    columnTitlesDiv.classList.remove("hidden");
-  } else {
-    columnTitlesDiv.classList.add("hidden");
+    tableBody.appendChild(row);
   }
-});
 
-document.getElementById("tableForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const tableName = document.getElementById("tableName").value;
-  const columnTitles = Array.from(
-    document.querySelectorAll(".columnTitle")
-  ).map((input) => input.value);
-
-  createTable(tableName, columnTitles);
-  document.getElementById("tableForm").classList.add("hidden");
-});
-
-function createTable(name, columns) {
-  const tableContainer = document.getElementById("tableContainer");
-
-  // Create table
-  const table = document.createElement("table");
-
-  // Create table caption
-  const caption = document.createElement("caption");
-  caption.textContent = name;
-  table.appendChild(caption);
-
-  // Create table header row
-  const headerRow = document.createElement("tr");
-  columns.forEach((title) => {
-    const th = document.createElement("th");
-    th.textContent = title;
-    headerRow.appendChild(th);
+  // Handle Add Row button click
+  addRowBtn.addEventListener("click", () => {
+    addEmptyRow();
   });
-  table.appendChild(headerRow);
 
-  // Add empty input row for user input
-  const inputRow = document.createElement("tr");
-  columns.forEach(() => {
-    const td = document.createElement("td");
-    const input = document.createElement("input");
-    input.type = "text";
-    input.classList.add("row-input");
-    td.appendChild(input);
-    inputRow.appendChild(td);
-  });
-  table.appendChild(inputRow);
+  // Handle Update Table button click
+  updateTableBtn.addEventListener("click", () => {
+    const rows = tableBody.querySelectorAll("tr");
+    let hasValidValues = false;
 
-  // Append table to container
-  tableContainer.innerHTML = ""; // Clear previous table
-  tableContainer.appendChild(table);
+    rows.forEach((row) => {
+      const inputs = row.querySelectorAll("input");
+      let rowHasValue = false;
 
-  // Create "Add Row" button
-  const addRowBtn = document.createElement("button");
-  addRowBtn.textContent = "Add Row";
-  addRowBtn.classList.add("btn", "add-row-btn");
-  addRowBtn.addEventListener("click", () => addRow(table, columns.length));
-  tableContainer.appendChild(addRowBtn);
+      inputs.forEach((input) => {
+        if (input.value.trim()) {
+          rowHasValue = true;
+        }
+      });
 
-  // Create "Update Table" button
-  const updateTableBtn = document.createElement("button");
-  updateTableBtn.textContent = "Update Table";
-  updateTableBtn.classList.add("btn", "update-table-btn");
-  updateTableBtn.addEventListener("click", () => updateTable(table, columns));
-  tableContainer.appendChild(updateTableBtn);
-}
+      if (rowHasValue) {
+        hasValidValues = true;
+      }
+    });
 
-function addRow(table, columnCount) {
-  const newRow = document.createElement("tr");
-  for (let i = 0; i < columnCount; i++) {
-    const td = document.createElement("td");
-    const input = document.createElement("input");
-    input.type = "text";
-    input.classList.add("row-input");
-    td.appendChild(input);
-    newRow.appendChild(td);
-  }
-  table.appendChild(newRow);
-}
+    if (!hasValidValues) {
+      alert(
+        "Please enter values in at least one row before updating the table."
+      );
+      return;
+    }
 
-function updateTable(table, columns) {
-  const rows = table.querySelectorAll("tr");
-  rows.forEach((row, rowIndex) => {
-    if (rowIndex === 0) return; // Skip header row
-
-    const inputs = row.querySelectorAll("input");
-    inputs.forEach((input, colIndex) => {
-      const cell = document.createElement("td");
-      cell.textContent = input.value;
-      row.replaceChild(cell, input.parentElement);
+    rows.forEach((row) => {
+      const inputs = row.querySelectorAll("input");
+      inputs.forEach((input) => {
+        const td = input.parentElement;
+        td.textContent = input.value; // Replace input field with entered value
+      });
     });
   });
-}
+});
