@@ -6,8 +6,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const addRowBtn = document.getElementById("addRowBtn");
   const updateTableBtn = document.getElementById("updateTableBtn");
   const downloadTableBtn = document.getElementById("downloadTableBtn");
-  let editTableBtn;
-  let table, tableBody, columnCount, captionInput, columnTitleInputs;
+  const editTableBtn = document.createElement("button");
+  let table, tableBody, columnCount;
+
+  // Initialize Edit Table button
+  editTableBtn.id = "editTableBtn";
+  editTableBtn.className = "btn edit-table-btn hidden";
+  editTableBtn.textContent = "Edit Table";
 
   // Show the form when the "Create Table" button is clicked
   createTableBtn.addEventListener("click", () => {
@@ -21,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     columnTitlesContainer.innerHTML = ""; // Clear previous inputs
 
     if (columnCount > 0) {
+      // Add input fields for column titles
       for (let i = 1; i <= columnCount; i++) {
         const formGroup = document.createElement("div");
         formGroup.classList.add("form-group");
@@ -51,11 +57,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableName = document.getElementById("tableName").value;
     const columnTitles = [];
 
+    // Check for empty table name
     if (!tableName.trim()) {
       alert("Please enter a table name.");
       return;
     }
 
+    // Check for column count and validate column titles
     columnCount = parseInt(document.getElementById("columnCount").value);
     if (isNaN(columnCount) || columnCount <= 0) {
       alert("Please enter a valid number of columns.");
@@ -71,16 +79,20 @@ document.addEventListener("DOMContentLoaded", () => {
       columnTitles.push(title);
     }
 
+    // Hide the form and the "Create Table" button
     createTableBtn.classList.add("hidden");
     tableForm.classList.add("hidden");
 
+    // Clear previous table if exists
     tableContainer.innerHTML = "";
 
+    // Create new table with caption
     table = document.createElement("table");
     const caption = document.createElement("caption");
     caption.textContent = tableName;
     table.appendChild(caption);
 
+    // Add table headers
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
     columnTitles.forEach((title) => {
@@ -91,22 +103,34 @@ document.addEventListener("DOMContentLoaded", () => {
     thead.appendChild(headerRow);
     table.appendChild(thead);
 
+    // Add empty body for rows
     tableBody = document.createElement("tbody");
     table.appendChild(tableBody);
 
+    // Add the first empty row with inputs
     addEmptyRow();
 
     tableContainer.appendChild(table);
 
-    // Show buttons
+    // Show buttons in the same row with new styles
+    const buttonContainer = document.createElement("div");
+    buttonContainer.classList.add("button-container");
+
+    buttonContainer.appendChild(addRowBtn);
+    buttonContainer.appendChild(updateTableBtn);
+    buttonContainer.appendChild(downloadTableBtn);
+    buttonContainer.appendChild(editTableBtn);
+
+    tableContainer.appendChild(buttonContainer);
+
+    // Ensure buttons are not hidden after creating table
     addRowBtn.classList.remove("hidden");
     updateTableBtn.classList.remove("hidden");
     downloadTableBtn.classList.remove("hidden");
-
-    // Create Edit Table button
-    createEditTableButton();
+    editTableBtn.classList.remove("hidden");
   });
 
+  // Function to add an empty row with input fields
   function addEmptyRow() {
     const row = document.createElement("tr");
     for (let i = 0; i < columnCount; i++) {
@@ -120,128 +144,92 @@ document.addEventListener("DOMContentLoaded", () => {
     tableBody.appendChild(row);
   }
 
+  // Handle Add Row button click
   addRowBtn.addEventListener("click", () => {
     addEmptyRow();
   });
 
+  // Handle Update Table button click
   updateTableBtn.addEventListener("click", () => {
     const rows = tableBody.querySelectorAll("tr");
+    let hasValidValues = false;
 
+    rows.forEach((row) => {
+      const inputs = row.querySelectorAll("input");
+      let rowHasValue = false;
+
+      inputs.forEach((input) => {
+        if (input.value.trim() !== "") {
+          rowHasValue = true;
+        }
+      });
+
+      if (rowHasValue) {
+        hasValidValues = true;
+      }
+    });
+
+    if (!hasValidValues) {
+      alert(
+        "Please enter values in at least one row before updating the table."
+      );
+      return;
+    }
+
+    // Update the table with the input values
     rows.forEach((row) => {
       const inputs = row.querySelectorAll("input");
       inputs.forEach((input) => {
         const td = input.parentElement;
-        td.textContent = input.value;
+        td.textContent = input.value; // Replace input field with entered value
       });
     });
-
-    // Update table caption with input value
-    if (captionInput) {
-      const captionElement = table.querySelector("caption");
-      captionElement.textContent = captionInput.value;
-    }
-
-    // Update column headers (titles)
-    const thInputs = table.querySelectorAll("thead th input");
-    thInputs.forEach((input, index) => {
-      const th = input.parentElement;
-      th.textContent = input.value;
-    });
-
-    toggleEditMode(false);
   });
 
-  // Create Edit Table button
-  function createEditTableButton() {
-    editTableBtn = document.createElement("button");
-    editTableBtn.textContent = "Edit Table";
-    editTableBtn.classList.add("btn");
-    tableContainer.appendChild(editTableBtn);
-
-    editTableBtn.addEventListener("click", () => {
-      toggleEditMode(true);
-    });
-  }
-
-  // Toggle between edit and view modes
-  function toggleEditMode(isEditing) {
-    const rows = tableBody.querySelectorAll("tr");
+  // Handle Edit Table button click
+  editTableBtn.addEventListener("click", () => {
+    const isEditing = editTableBtn.textContent === "Edit Table";
 
     if (isEditing) {
-      editTableBtn.classList.add("hidden");
-
-      // Convert caption (title) to input field
-      const captionElement = table.querySelector("caption");
-      const captionValue = captionElement.textContent;
-      captionElement.innerHTML = ""; // Clear the caption text
-      captionInput = document.createElement("input");
-      captionInput.type = "text";
-      captionInput.value = captionValue;
-      captionElement.appendChild(captionInput);
-
-      // Convert column headers (th) to input fields
-      const headerCells = table.querySelectorAll("thead th");
-      headerCells.forEach((th) => {
-        const thValue = th.textContent;
-        th.innerHTML = ""; // Clear the current text
-        const thInput = document.createElement("input");
-        thInput.type = "text";
-        thInput.classList.add("row-input");
-        thInput.value = thValue;
-        th.appendChild(thInput);
+      // Switch to edit mode
+      editTableBtn.textContent = "Save Changes";
+      table.querySelectorAll("th").forEach((th, index) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = th.textContent;
+        th.textContent = "";
+        th.appendChild(input);
       });
-
-      // Convert table body cells to input fields
-      rows.forEach((row) => {
-        const cells = row.querySelectorAll("td");
-        cells.forEach((td) => {
-          const input = document.createElement("input");
-          input.type = "text";
-          input.classList.add("row-input");
-          input.value = td.textContent;
-          td.innerHTML = "";
-          td.appendChild(input);
-        });
+      table.querySelectorAll("td").forEach((td) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = td.textContent;
+        td.textContent = "";
+        td.appendChild(input);
       });
     } else {
-      editTableBtn.classList.remove("hidden");
-
-      // Restore the caption (title) as plain text
-      const captionElement = table.querySelector("caption");
-      captionElement.textContent = captionInput.value;
-
-      // Restore column headers (titles) as plain text
-      const headerCells = table.querySelectorAll("thead th");
-      headerCells.forEach((th) => {
-        const input = th.querySelector("input");
+      // Switch to view mode
+      editTableBtn.textContent = "Edit Table";
+      table.querySelectorAll("th input").forEach((input, index) => {
+        const th = input.parentElement;
         th.textContent = input.value;
       });
-
-      // Restore table body cells as plain text
-      rows.forEach((row) => {
-        const inputs = row.querySelectorAll("input");
-        inputs.forEach((input) => {
-          const td = input.parentElement;
-          td.textContent = input.value;
-        });
+      table.querySelectorAll("td input").forEach((input) => {
+        const td = input.parentElement;
+        td.textContent = input.value;
       });
     }
-  }
+  });
 
-  function downloadTable() {
-    let text = "";
-
-    // Get the table title from the <caption>
-    const tableTitle = table.querySelector("caption").textContent;
-    text += `${tableTitle}\n\n`; // Add title to the file content
-
+  // Function to download table data as a text file
+  downloadTableBtn.addEventListener("click", () => {
     const rows = table.querySelectorAll("tr");
+    let text = table.querySelector("caption").textContent + "\n";
 
-    // Get the headers (th) and rows (td)
     rows.forEach((row) => {
       const cells = row.querySelectorAll("th, td");
       const rowText = Array.from(cells)
-        .map((cell) => cell.textContent)
+        .map((cell) => cell.textContent.trim())
         .join("\t");
       text += rowText + "\n";
     });
@@ -250,13 +238,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "table-data.txt";
+    a.download = "table.txt";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  }
-
-  downloadTableBtn.addEventListener("click", () => {
-    downloadTable();
   });
 });

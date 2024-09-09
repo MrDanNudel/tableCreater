@@ -8,7 +8,9 @@
   </head>
   <body>
     <div class="container">
-      <button id="createTableBtn" class="btn">Create Table</button>
+      <button id="createTableBtn" class="btn create-table-btn">
+        Create Table
+      </button>
 
       <form id="tableForm" class="hidden">
         <div class="form-group">
@@ -20,13 +22,24 @@
           <input type="number" id="columnCount" required />
         </div>
         <div id="columnTitles" class="column-titles-container"></div>
-        <button id="createTable" class="btn">Create Table</button>
+        <button id="createTable" class="btn create-table-btn">
+          Create Table
+        </button>
       </form>
 
       <div id="tableContainer"></div>
-      <button id="addRowBtn" class="btn hidden">Add Row</button>
-      <button id="updateTableBtn" class="btn hidden">Update Table</button>
-      <button id="downloadTableBtn" class="btn hidden">Download Table</button>
+      <div class="button-container">
+        <button id="addRowBtn" class="btn add-row-btn hidden">Add Row</button>
+        <button id="updateTableBtn" class="btn update-table-btn hidden">
+          Update Table
+        </button>
+        <button id="downloadTableBtn" class="btn download-table-btn hidden">
+          Download Table
+        </button>
+        <button id="editTableBtn" class="btn edit-table-btn hidden">
+          Edit Table
+        </button>
+      </div>
     </div>
 
     <script src="script.js"></script>
