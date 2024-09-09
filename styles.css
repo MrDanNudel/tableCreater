@@ -172,3 +172,60 @@ input {
     margin: 5px 0;
   }
 }
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+/* Class to make elements visible after delay */
+.visible {
+  opacity: 1;
+} /* Fade-in effect */
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+/* Class to make elements visible after delay */
+.visible {
+  opacity: 1;
+}
+
+/* Scrollable if there are many columns */
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.2s ease-in;
+}
+
+/* Class to make elements visible after delay */
+.visible {
+  opacity: 1;
+}
+
+/* Scrollable if there are many columns */
+.scrollable {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Button styles */
+.hidden {
+  display: none;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-table-btn {
+  background-color: #6c757d;
+}

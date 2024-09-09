@@ -20,29 +20,36 @@ document.addEventListener("DOMContentLoaded", () => {
     tableForm.classList.remove("hidden");
   });
 
-  // Handle column titles generation based on column count input
+  // Handle column titles generation with fade-in effect based on column count input
   document.getElementById("columnCount").addEventListener("input", () => {
     columnCount = parseInt(document.getElementById("columnCount").value);
     columnTitlesContainer.innerHTML = ""; // Clear previous inputs
 
     if (columnCount > 0) {
-      // Add input fields for column titles
+      // Add input fields for column titles with a fade-in effect
       for (let i = 1; i <= columnCount; i++) {
         const formGroup = document.createElement("div");
-        formGroup.classList.add("form-group");
+        formGroup.classList.add("form-group", "fade-in"); // Add fade-in class initially
+
         const label = document.createElement("label");
         label.textContent = `Column ${i} Title:`;
         const input = document.createElement("input");
         input.type = "text";
         input.id = `columnTitle${i}`;
         input.required = true;
+
         formGroup.appendChild(label);
         formGroup.appendChild(input);
         columnTitlesContainer.appendChild(formGroup);
+
+        // Add a delay before making the element visible
+        setTimeout(() => {
+          formGroup.classList.add("visible");
+        }, i * 300); // Apply 300ms delay for each column
       }
 
       // Add scrollbar if columns exceed 5
-      if (columnCount > 5) {
+      if (columnCount > 2) {
         columnTitlesContainer.classList.add("scrollable");
       } else {
         columnTitlesContainer.classList.remove("scrollable");
@@ -123,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     tableContainer.appendChild(buttonContainer);
 
-    // Ensure buttons are not hidden after creating table
+    // Ensure buttons are not hidden after creating the table
     addRowBtn.classList.remove("hidden");
     updateTableBtn.classList.remove("hidden");
     downloadTableBtn.classList.remove("hidden");
